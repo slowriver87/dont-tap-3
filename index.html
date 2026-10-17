@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Don't Tap the 3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Tap for every number except 3. A two-minute test of how long your attention holds before autopilot takes over.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one narrow column, phone first. One big tap stage where digits flash, then a timeline chart of every tap. Same family look as the other Mind Lab games. */
+:root{
+  --bg:#EDF0F5; --panel:#FFFFFF; --ink:#141B2D; --muted:#5A6378; --line:#D5DAE4; --soft:#F5F7FA;
+  --acc:#B4316B; --acc-bg:#FAE3EE; --ok:#1C7A4E; --ok-bg:#DDF2E7; --bad:#C62D3A; --bad-bg:#FBE3E5; --dot:#5A6378;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1320; --panel:#181D2D; --ink:#E8EBF3; --muted:#9AA2B6; --line:#2B3246; --soft:#12172A;
+  --acc:#F28DB8; --acc-bg:#45182D; --ok:#5FD39A; --ok-bg:#163526; --bad:#FF7F88; --bad-bg:#43191E; --dot:#9AA2B6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1320; --panel:#181D2D; --ink:#E8EBF3; --muted:#9AA2B6; --line:#2B3246; --soft:#12172A;
+  --acc:#F28DB8; --acc-bg:#45182D; --ok:#5FD39A; --ok-bg:#163526; --bad:#FF7F88; --bad-bg:#43191E; --dot:#9AA2B6; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.back{font-size:13px;color:var(--muted);text-decoration:none}
+.back:hover{text-decoration:underline}
+h1{font:700 34px/1 var(--f-display);letter-spacing:-0.02em;margin:0}
+h1 .a{color:var(--acc)}
+.tag{color:var(--muted);font-size:14px;margin:6px 0 0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.rule{margin:0;font-size:18px;text-align:center}
+.rule b{font-weight:500;color:var(--acc)}
+.stage{position:relative;height:300px;border-radius:16px;background:var(--soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;overflow:hidden}
+.stage:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.stage .d{font:700 80px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.stage .mask{width:84px;height:84px;border-radius:50%;border:4px solid var(--line);position:relative}
+.stage .mask::before,.stage .mask::after{content:"";position:absolute;left:50%;top:50%;width:70%;height:4px;background:var(--line);transform:translate(-50%,-50%) rotate(45deg)}
+.stage .mask::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.stage .msg{font-size:16px;color:var(--muted);text-align:center;max-width:28ch;padding:0 12px}
+.stage .count{font:700 96px/1 var(--f-display);color:var(--acc)}
+.stage.tap{background:var(--acc-bg)}
+.bar{height:6px;border-radius:3px;background:var(--bg);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc)}
+.btn{height:52px;border-radius:12px;border:0;background:var(--ink);color:var(--bg);font:500 16px var(--f-body);cursor:pointer;width:100%;touch-action:manipulation}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.small{font-size:13px;color:var(--muted);text-align:center;margin:-4px 0 0}
+h2{font:700 22px/1.2 var(--f-display);margin:0;text-wrap:balance}
+.note{font-size:14px;color:var(--muted);margin:0}
+.chart{width:100%;height:auto;display:block}
+.chart text{font:400 11px var(--f-body);fill:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:50%;display:inline-block}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.st{background:var(--bg);border-radius:10px;padding:10px 12px;min-width:0}
+.st small{display:block;font-size:12px;color:var(--muted)}
+.st b{font:500 20px var(--f-mono);font-variant-numeric:tabular-nums}
+.st span{display:block;font-size:12px;color:var(--muted)}
+.plain{background:var(--bg);border-radius:12px;padding:14px 16px}
+.plain h3{font:700 17px/1.3 var(--f-display);margin:0 0 4px}
+.plain p{margin:8px 0 0;font-size:15px;max-width:62ch}
+.plain p b{font-weight:500}
+.hist{font:400 13px var(--f-mono);font-variant-numeric:tabular-nums;width:100%;border-collapse:collapse}
+.hist td,.hist th{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right}
+.hist th{font:500 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hist td:first-child,.hist th:first-child{text-align:left}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+summary{cursor:pointer;font:700 17px var(--f-display)}
+details p{font-size:15px;margin:10px 0 0;max-width:62ch}
+details p b,.sci b{font-weight:500}
+.sci-h{font:700 16px/1.3 var(--f-display);margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+.sci{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:10px;font-size:15px;max-width:62ch}
+.sci span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.foot{font-size:12px;color:var(--muted);text-align:center}
+</style>
+
+<div class="wrap">
+  <a class="back" href="https://slowriver87.github.io/mindlabfun/">&larr; All Mind Lab games</a>
+  <header>
+    <h1>Don't Tap the <span class="a">3</span></h1>
+    <p class="tag">A two-minute test of how long your attention holds.</p>
+  </header>
+
+  <section class="panel">
+    <p class="rule">Tap for every number. <b>Not for 3.</b></p>
+    <div class="stage" id="stage" role="button" tabindex="0" aria-label="Tap area"><div class="msg" id="stageMsg">Numbers will flash here. Tap this box for each one, but hold still when you see a 3.</div></div>
+    <div class="bar"><i id="bar"></i></div>
+    <button class="btn" id="go">Start</button>
+    <p class="small">About 2 minutes. On a computer, use the space bar.</p>
+  </section>
+
+  <section class="panel" id="results" hidden>
+    <h2 id="verdict"></h2>
+    <svg class="chart" id="chart" viewBox="0 0 480 200" role="img" aria-label="Your tap speed on every number, with each 3 marked as held or tapped"></svg>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--dot)"></i>Each tap's speed</span>
+      <span><i class="sw" style="background:var(--ok)"></i>3 you held back on</span>
+      <span><i class="sw" style="background:var(--bad)"></i>3 you tapped</span>
+    </div>
+    <div class="stats">
+      <div class="st"><small>3s you stopped on</small><b id="caught"></b><span>The main score</span></div>
+      <div class="st"><small>Numbers you missed</small><b id="miss"></b><span>Ones you should have tapped</span></div>
+      <div class="st"><small>Speed before slips</small><b id="before"></b><span>vs. before the 3s you caught</span></div>
+      <div class="st"><small>Slips, first vs second half</small><b id="halves"></b><span>Did focus fade?</span></div>
+    </div>
+    <div class="plain">
+      <h3>What this means, in plain English</h3>
+      <div id="plain"></div>
+    </div>
+    <button class="btn" id="again">Play again</button>
+    <div id="histWrap" hidden>
+      <table class="hist"><thead><tr><th>Run</th><th>Stopped</th><th>Slips</th><th>Missed</th></tr></thead><tbody id="hist"></tbody></table>
+      <p class="note" id="histAvg" style="margin-top:8px"></p>
+    </div>
+  </section>
+
+  <details>
+    <summary>Why your thumb tapped the 3</summary>
+    <p><b>Tapping becomes automatic fast.</b> After a few dozen taps, your thumb runs on its own rhythm. Your brain stops checking each number closely, because almost every number means tap.</p>
+    <p><b>Then a 3 shows up.</b> Stopping takes a deliberate "wait, no." If your mind has drifted, that check comes too late and your thumb is already down. That's a slip.</p>
+    <p><b>You speed up before you slip.</b> Researchers noticed that people tap faster in the few seconds before a slip. Faster tapping is a sign of autopilot, so the chart often shows a run of quick taps right before a red mark.</p>
+    <p><b>What this can't tell you.</b> There are only 10 threes, so one slip changes your score by 10%. Phone screens also add a little timing noise. Lab versions use over 200 numbers. Your history across several runs says more than one game.</p>
+
+    <h3 class="sci-h">The science</h3>
+    <ul class="sci">
+      <li><b>The original test.</b> This is the Sustained Attention to Response Task. Its creators found that people who slipped more on the 3 also reported more everyday attention failures, like walking into a room and forgetting why. They also found people sped up right before slips. <span>Robertson and colleagues, 1997</span></li>
+      <li><b>Slips track mind-wandering.</b> When people were stopped during this task and asked what they were thinking about, slips were more common right after their minds had wandered. Brain scans showed the brain's daydreaming network active before errors. <span>Christoff and colleagues, 2009</span></li>
+      <li><b>Our minds wander a lot.</b> A study that pinged people's phones at random moments found their minds were wandering in about 47% of samples. People were also less happy when their minds wandered. <span>Killingsworth and Gilbert, 2010</span></li>
+      <li><b>Attention fades with time.</b> During World War II, radar operators missed more signals as their watch went on. A clock-watching test built to study this showed accuracy dropping within the first half hour. <span>Mackworth, 1948</span></li>
+      <li><b>A phone buzz costs you, even unchecked.</b> People doing this exact task made more slips after their phone got a notification, even when they didn't look at it. <span>Stothart, Mitchum and Yehnert, 2015</span></li>
+      <li><b>The goldfish claim is a myth.</b> You may have heard that human attention span is now 8 seconds, shorter than a goldfish's. It spread from a 2015 marketing report. When reporters looked for the research behind the number, they couldn't find any.</li>
+    </ul>
+    <p><b>What's still debated.</b> Whether attention spans are actually shrinking is unsettled. Researcher Gloria Mark tracked how long office workers stayed on one screen before switching: about two and a half minutes in 2004, and around 47 seconds in more recent studies. That shows our switching habits have changed. Whether our underlying ability to focus has changed is a separate question, and the evidence there is much weaker.</p>
+  </details>
+
+  <p class="foot">Based on Robertson and colleagues 1997, Christoff and colleagues 2009, and Stothart and colleagues 2015.</p>
+</div>
+
+<script>
+(function(){
+  var N=90,THREES=10,SOA=1150,SHOW=250,SIZES=[56,72,88,104];
+  var S,raf=null,cd=null;
+  function $(id){return document.getElementById(id)}
+  function buildSeq(){
+    var pos=[],seq=[];
+    while(pos.length<THREES){var p=4+Math.floor(Math.random()*(N-4));if(pos.some(function(q){return Math.abs(q-p)<4}))continue;pos.push(p)}
+    for(var i=0;i<N;i++){if(pos.indexOf(i)>=0)seq.push(3);else{var d;do{d=1+Math.floor(Math.random()*9)}while(d===3||(seq.length&&d===seq[seq.length-1]));seq.push(d)}}
+    return seq}
+  function fresh(){var seq=buildSeq();return {seq:seq,size:seq.map(function(){return SIZES[Math.floor(Math.random()*SIZES.length)]}),rt:seq.map(function(){return null}),t0:0,i:-1,running:false}}
+
+  function setStage(html){$("stage").innerHTML=html}
+  function start(){
+    S=fresh();$("results").hidden=true;$("go").hidden=true;$("bar").style.width="0";
+    var n=3;setStage('<div class="count">'+n+'</div>');
+    cd=setInterval(function(){n--;if(n>0)setStage('<div class="count">'+n+'</div>');else{clearInterval(cd);run()}},800)}
+  function run(){
+    S.running=true;S.t0=performance.now();S.i=-1;$("stage").focus({preventScroll:true});
+    function frame(now){
+      var el=now-S.t0,i=Math.floor(el/SOA);
+      if(i>=N){finish();return}
+      if(i!==S.i){S.i=i;S.onset=S.t0+i*SOA;setStage('<div class="d" style="font-size:'+S.size[i]+'px">'+S.seq[i]+'</div>');S.masked=false;$("bar").style.width=((i+1)/N*100)+"%"}
+      if(!S.masked&&el-i*SOA>=SHOW){S.masked=true;setStage('<div class="mask"></div>')}
+      raf=requestAnimationFrame(frame)}
+    raf=requestAnimationFrame(frame)}
+  function tap(){
+    if(!S||!S.running||S.i<0)return;
+    var i=S.i;if(S.rt[i]!==null)return;
+    S.rt[i]=performance.now()-S.onset;
+    var st=$("stage");st.classList.add("tap");setTimeout(function(){st.classList.remove("tap")},90)}
+  function finish(){S.running=false;cancelAnimationFrame(raf);setStage('<div class="msg">Done. Your results are below.</div>');$("go").hidden=false;$("go").textContent="Play again";results()}
+
+  function mean(a){var s=0;a.forEach(function(x){s+=x});return a.length?s/a.length:null}
+  function results(){
+    var threes=[],goRT=[],omit=0;
+    S.seq.forEach(function(d,i){if(d===3)threes.push(i);else if(S.rt[i]===null)omit++;else goRT.push(S.rt[i])});
+    var slips=threes.filter(function(i){return S.rt[i]!==null}),held=threes.filter(function(i){return S.rt[i]===null});
+    var caught=Math.round(held.length/THREES*100);
+    function pre(i){var a=[];for(var k=i-4;k<i;k++)if(k>=0&&S.seq[k]!==3&&S.rt[k]!==null)a.push(S.rt[k]);return mean(a)}
+    var preSlip=mean(slips.map(pre).filter(function(x){return x!=null})),preHeld=mean(held.map(pre).filter(function(x){return x!=null}));
+    var diff=(preSlip!=null&&preHeld!=null)?Math.round(preHeld-preSlip):null;
+    var h1=slips.filter(function(i){return i<N/2}).length,h2=slips.length-h1;
+    $("caught").textContent=held.length+" of "+THREES;$("miss").textContent=String(omit);
+    $("before").textContent=diff==null?"--":(diff>=0?diff+" ms faster":(-diff)+" ms slower");
+    $("halves").textContent=h1+" then "+h2;
+    $("verdict").textContent=caught>=90?"Locked in. You stopped on "+held.length+" of 10 threes.":(caught>=60?"You stopped on "+held.length+" of 10 threes. Autopilot got you a few times.":"Autopilot took over. You stopped on only "+held.length+" of 10 threes.");
+    chart(threes);
+    $("plain").innerHTML=plain(held.length,slips.length,omit,diff,h1,h2,mean(goRT));
+    $("results").hidden=false;
+    save({d:Date.now(),c:caught,e:slips.length,o:omit});
+    $("results").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}
+
+  function plain(held,slips,omit,diff,h1,h2,avg){
+    var out=[];
+    out.push("<b>The short version.</b> There were 10 threes hidden among 90 numbers. You held back on "+held+" and tapped on "+slips+". "+(slips===0?"Your attention never slipped into autopilot, which is uncommon.":"Each tap on a 3 was a moment when your thumb was running on habit and your attention had drifted."));
+    out.push("<b>Reading the chart.</b> Each gray dot is one tap, placed by how fast you tapped. Higher means slower, lower means faster. Green dots are threes you held back on. Red dots are threes you tapped. Watch for a dip right before a red dot: that's you speeding up just before a slip.");
+    if(diff!=null)out.push("<b>Speed before slips.</b> In the taps just before a slip, you were "+(diff>=0?Math.abs(diff)+" ms faster":Math.abs(diff)+" ms slower")+" than in the taps before a 3 you caught. A ms is a thousandth of a second. "+(diff>20?"That fits the research: speeding up is a sign your thumb has taken over from your attention.":"This run didn't show the usual speed-up, which can happen with only a few slips."));
+    else if(slips===0)out.push("<b>Speed before slips.</b> You had no slips, so there's nothing to compare. Most people slip at least once or twice.");
+    if(slips>0)out.push("<b>First half vs second half.</b> You slipped "+h1+" time"+(h1===1?"":"s")+" in the first half and "+h2+" in the second. "+(h2>h1?"More slips later suggests your focus faded as the game went on, even over two minutes.":(h2<h1?"Fewer slips later means you settled in. Some people warm up before they fade.":"Your slips were spread evenly.")));
+    if(omit>3)out.push("<b>Missed numbers, "+omit+".</b> You also skipped some numbers you should have tapped. Being extra careful can mean fewer slips but more misses. Both count as lapses.");
+    out.push("<b>Why it matters.</b> This is how attention fails in real life. Not with a dramatic blank, but with your hands running on habit while your mind drifts. Typing the wrong word, missing your exit, or a phone buzz pulling you away for a moment. If something needs your full attention, take it in shorter stretches and put the phone face down.");
+    return out.map(function(x){return "<p>"+x+"</p>"}).join("")}
+
+  function chart(threes){
+    var W=480,H=200,L=40,R=10,T=14,B=30,ys=S.rt.filter(function(x){return x!=null}),hi=Math.max(700,Math.ceil((Math.max.apply(null,ys.concat([0]))+50)/100)*100),lo=Math.max(0,Math.floor((Math.min.apply(null,ys.concat([hi]))-50)/100)*100);
+    if(hi-lo<300)lo=Math.max(0,hi-300);
+    function X(i){return L+i/(N-1)*(W-L-R)}
+    function Y(v){return T+(hi-Math.min(hi,Math.max(lo,v)))/(hi-lo)*(H-T-B)}
+    var g="";
+    for(var v=lo;v<=hi;v+=(hi-lo>500?200:100)){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v+'</text>'}
+    g+='<text x="'+L+'" y="'+(H-8)+'">start</text><text x="'+(W-R)+'" y="'+(H-8)+'" text-anchor="end">end</text><text x="'+((L+W-R)/2)+'" y="'+(H-8)+'" text-anchor="middle">ms to tap (lower = faster)</text>';
+    S.seq.forEach(function(d,i){if(d!==3&&S.rt[i]!=null)g+='<circle cx="'+X(i)+'" cy="'+Y(S.rt[i])+'" r="2.5" fill="var(--dot)" fill-opacity=".7"/>'});
+    threes.forEach(function(i){var slip=S.rt[i]!=null,y=slip?Y(S.rt[i]):H-B-4;
+      g+='<line x1="'+X(i)+'" x2="'+X(i)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--'+(slip?"bad":"ok")+')" stroke-opacity=".25"/>';
+      g+='<circle cx="'+X(i)+'" cy="'+y+'" r="6" fill="var(--'+(slip?"bad":"ok")+')"/>'});
+    $("chart").innerHTML=g}
+
+  function load(){try{return JSON.parse(localStorage.getItem("nothree.runs")||"[]")}catch(e){return []}}
+  function save(r){var a=load();a.unshift(r);a=a.slice(0,20);try{localStorage.setItem("nothree.runs",JSON.stringify(a))}catch(e){}hist(a)}
+  function hist(a){if(!a.length){$("histWrap").hidden=true;return}$("histWrap").hidden=false;
+    $("hist").innerHTML=a.slice(0,8).map(function(r){var d=new Date(r.d);
+      return "<tr><td>"+(d.getMonth()+1)+"/"+d.getDate()+" "+d.toTimeString().slice(0,5)+"</td><td>"+(r.c/10)+"/10</td><td>"+r.e+"</td><td>"+r.o+"</td></tr>"}).join("");
+    var s=0;a.forEach(function(r){s+=r.c});
+    $("histAvg").textContent=a.length>1?("Across "+a.length+" runs you stopped on "+Math.round(s/a.length)+"% of threes on average."):"Play a few more runs to see your average."}
+
+  $("go").addEventListener("click",start);
+  $("stage").addEventListener("pointerdown",function(e){e.preventDefault();tap()});
+  document.addEventListener("keydown",function(e){if((e.key===" "||e.key==="Enter")&&S&&S.running){e.preventDefault();if(!e.repeat)tap()}});
+  $("again").addEventListener("click",function(){window.scrollTo({top:0});start()});
+  hist(load());
+})();
+</script>
+
+</body>
+</html>
