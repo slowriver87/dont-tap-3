@@ -82,6 +82,7 @@ details p b,.sci b{font-weight:500}
 .sci{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:10px;font-size:15px;max-width:62ch}
 .sci span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .foot{font-size:12px;color:var(--muted);text-align:center}
+.dur{font:500 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
 </style>
 
 <div class="wrap">
@@ -89,6 +90,7 @@ details p b,.sci b{font-weight:500}
   <header>
     <h1>Don't Tap the <span class="a">3</span></h1>
     <p class="tag">A two-minute test of how long your attention holds.</p>
+      <p class="dur">About 2 minutes</p>
   </header>
 
   <section class="panel">
@@ -96,7 +98,7 @@ details p b,.sci b{font-weight:500}
     <div class="stage" id="stage" role="button" tabindex="0" aria-label="Tap area"><div class="msg" id="stageMsg">Numbers will flash here. Tap this box for each one, but hold still when you see a 3.</div></div>
     <div class="bar"><i id="bar"></i></div>
     <button class="btn" id="go">Start</button>
-    <p class="small">About 2 minutes. On a computer, use the space bar.</p>
+    <p class="small">On a computer, use the space bar.</p>
   </section>
 
   <section class="panel" id="results" hidden>
