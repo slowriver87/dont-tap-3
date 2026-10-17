@@ -16,17 +16,17 @@
 /* Layout: one narrow column, phone first. One big tap stage where digits flash, then a timeline chart of every tap. Same family look as the other Mind Lab games. */
 :root{
   --bg:#EDF0F5; --panel:#FFFFFF; --ink:#141B2D; --muted:#5A6378; --line:#D5DAE4; --soft:#F5F7FA;
-  --acc:#B4316B; --acc-bg:#FAE3EE; --ok:#1C7A4E; --ok-bg:#DDF2E7; --bad:#C62D3A; --bad-bg:#FBE3E5; --dot:#5A6378;
+  --acc:#B4316B; --acc-bg:#FAE3EE; --ok:#1C7A4E; --ok-bg:#DDF2E7; --bad:#C62D3A; --bad-bg:#FBE3E5; --good:#1C7A4E; --dot:#5A6378;
   --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
   --f-body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0F1320; --panel:#181D2D; --ink:#E8EBF3; --muted:#9AA2B6; --line:#2B3246; --soft:#12172A;
-  --acc:#F28DB8; --acc-bg:#45182D; --ok:#5FD39A; --ok-bg:#163526; --bad:#FF7F88; --bad-bg:#43191E; --dot:#9AA2B6; color-scheme:dark}}
+  --acc:#F28DB8; --acc-bg:#45182D; --ok:#5FD39A; --ok-bg:#163526; --bad:#FF7F88; --bad-bg:#43191E; --good:#5FD39A; --dot:#9AA2B6; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F1320; --panel:#181D2D; --ink:#E8EBF3; --muted:#9AA2B6; --line:#2B3246; --soft:#12172A;
-  --acc:#F28DB8; --acc-bg:#45182D; --ok:#5FD39A; --ok-bg:#163526; --bad:#FF7F88; --bad-bg:#43191E; --dot:#9AA2B6; color-scheme:dark}
+  --acc:#F28DB8; --acc-bg:#45182D; --ok:#5FD39A; --ok-bg:#163526; --bad:#FF7F88; --bad-bg:#43191E; --good:#5FD39A; --dot:#9AA2B6; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--f-body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
@@ -83,6 +83,45 @@ details p b,.sci b{font-weight:500}
 .sci span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .foot{font-size:12px;color:var(--muted);text-align:center}
 .dur{font:500 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
+.hist .old{color:var(--muted)}
+details.sci-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+details.sci-box>summary{cursor:pointer;font:700 17px var(--f-display)}
+details.sci-box p{font-size:15px;margin:10px 0 0;max-width:62ch}
+details.sci-box p b{font-weight:500}
+.ml-quitbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;min-height:40px}
+.ml-quit{position:relative;overflow:hidden;height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font:500 13px var(--f-body);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.ml-quit i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--bad-bg,var(--line));z-index:0}
+.ml-quit span{position:relative;z-index:1}
+.ml-quit.holding{color:var(--bad,var(--ink));border-color:var(--bad,var(--ink))}
+.ml-quit-hint{font-size:12px;color:var(--muted)}
+.ml-status{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.ml-status h2{font:700 20px/1.2 var(--f-display);margin:0;text-wrap:balance}
+.ml-status p{margin:0;font-size:15px;max-width:62ch}
+.ml-status p b{font-weight:500}
+.ml-pill{display:inline-block;font:500 12px var(--f-body);padding:2px 10px;border-radius:999px;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.ml-pill.ok{color:var(--good,var(--ink));border-color:currentColor}
+.ml-meter{height:6px;border-radius:3px;background:var(--bg);overflow:hidden}
+.ml-meter i{display:block;height:100%;background:var(--ink);border-radius:3px}
+.ml-trend{width:100%;height:auto;display:block}
+.ml-trend text{font:400 11px var(--f-body);fill:var(--muted)}
+.ml-link{background:none;border:0;padding:4px 0;color:var(--muted);font:400 13px var(--f-body);text-decoration:underline;cursor:pointer;align-self:flex-start}
+.ml-confirm{display:flex;flex-direction:column;gap:10px;font-size:14px}
+.ml-confirm-row{display:flex;gap:8px}
+.ml-btn{height:42px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font:500 14px var(--f-body);cursor:pointer}
+.ml-btn.danger{background:var(--bad,#C62D3A);border-color:var(--bad,#C62D3A);color:var(--panel)}
+.ml-btn:focus-visible,.ml-link:focus-visible,.ml-quit:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.ml-src{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted)}
+.ml-src li{overflow-wrap:anywhere}
+.ml-src .n{font-family:var(--f-mono);color:var(--ink)}
+.ml-src a{color:inherit}
+sup.c{font-size:11px;line-height:0}
+sup.c a{color:var(--muted);text-decoration:none}
+.howto{background:transparent!important;border:0!important;padding:0!important}
+.howto summary{font:500 14px var(--f-body)!important;color:var(--muted)}
+.howto p{font-size:14px!important;margin:8px 0 0!important}
+.rule{margin:0;font-size:16px}
+.rule b{font-weight:500}
+
 </style>
 
 <div class="wrap">
@@ -90,16 +129,24 @@ details p b,.sci b{font-weight:500}
   <header>
     <h1>Don't Tap the <span class="a">3</span></h1>
     <p class="tag">A two-minute test of how long your attention holds.</p>
-      <p class="dur">About 2 minutes</p>
+    <p class="dur">About 2 minutes</p>
   </header>
 
+  <details class="howto"><summary>How to play</summary>
+    <p>Numbers flash in the big box, one about every second. Tap the box for every number, except 3. When you see a 3, hold still. There are 90 numbers, with 10 threes mixed in.</p>
+    <p>Each number shows briefly, then a blank marker covers it, so you have to read each one. On a computer, use the space bar. To stop partway, hold the Quit button for one second, or press Esc twice.</p>
+  </details>
+
   <section class="panel">
-    <p class="rule">Tap for every number. <b>Not for 3.</b></p>
+    <div class="ml-quitbar" id="quitbar" hidden><span class="ml-quit-hint"></span><button class="ml-quit" id="quit" type="button"><i></i><span>Hold to quit</span></button></div>
+    <p class="rule" style="text-align:center;font-size:18px">Tap for every number. <b>Not for 3.</b></p>
     <div class="stage" id="stage" role="button" tabindex="0" aria-label="Tap area"><div class="msg" id="stageMsg">Numbers will flash here. Tap this box for each one, but hold still when you see a 3.</div></div>
     <div class="bar"><i id="bar"></i></div>
     <button class="btn" id="go">Start</button>
     <p class="small">On a computer, use the space bar.</p>
   </section>
+
+  <section class="ml-status" id="mlstatus"></section>
 
   <section class="panel" id="results" hidden>
     <h2 id="verdict"></h2>
@@ -113,7 +160,7 @@ details p b,.sci b{font-weight:500}
       <div class="st"><small>3s you stopped on</small><b id="caught"></b><span>The main score</span></div>
       <div class="st"><small>Numbers you missed</small><b id="miss"></b><span>Ones you should have tapped</span></div>
       <div class="st"><small>Speed before slips</small><b id="before"></b><span>vs. before the 3s you caught</span></div>
-      <div class="st"><small>Slips, first vs second half</small><b id="halves"></b><span>Did focus fade?</span></div>
+      <div class="st"><small>Toward your settled score</small><b id="sprog"></b><span id="sprogSub"></span></div>
     </div>
     <div class="plain">
       <h3>What this means, in plain English</h3>
@@ -122,123 +169,225 @@ details p b,.sci b{font-weight:500}
     <button class="btn" id="again">Play again</button>
     <div id="histWrap" hidden>
       <table class="hist"><thead><tr><th>Run</th><th>Stopped</th><th>Slips</th><th>Missed</th></tr></thead><tbody id="hist"></tbody></table>
-      <p class="note" id="histAvg" style="margin-top:8px"></p>
     </div>
   </section>
 
-  <details>
-    <summary>Why your thumb tapped the 3</summary>
-    <p><b>Tapping becomes automatic fast.</b> After a few dozen taps, your thumb runs on its own rhythm. Your brain stops checking each number closely, because almost every number means tap.</p>
-    <p><b>Then a 3 shows up.</b> Stopping takes a deliberate "wait, no." If your mind has drifted, that check comes too late and your thumb is already down. That's a slip.</p>
-    <p><b>You speed up before you slip.</b> Researchers noticed that people tap faster in the few seconds before a slip. Faster tapping is a sign of autopilot, so the chart often shows a run of quick taps right before a red mark.</p>
-    <p><b>What this can't tell you.</b> There are only 10 threes, so one slip changes your score by 10%. Phone screens also add a little timing noise. Lab versions use over 200 numbers. Your history across several runs says more than one game.</p>
+  <details class="sci-box">
+    <summary>The science behind this game</summary>
+    <h3 class="sci-h" style="border:0;padding-top:0">What it measures</h3>
+    <p>This game measures sustained attention: how well you stay on task when the task is dull and your hands can run on habit. It's modeled on the Sustained Attention to Response Task, a lab test where people respond to every digit except one <sup class="c"><a href="#src1">[1]</a></sup>. Your score is the share of 3s you held back on.</p>
+    <p><b>How this compares to the lab.</b> The lab test counts "commission errors," the times people respond to the digit they should skip. This game reports the opposite, the share they stopped on, because it's easier to read. Lab versions use many more digits per run. This one uses 90 digits with 10 threes, so each round is short and noisier.</p>
 
-    <h3 class="sci-h">The science</h3>
-    <ul class="sci">
-      <li><b>The original test.</b> This is the Sustained Attention to Response Task. Its creators found that people who slipped more on the 3 also reported more everyday attention failures, like walking into a room and forgetting why. They also found people sped up right before slips. <span>Robertson and colleagues, 1997</span></li>
-      <li><b>Slips track mind-wandering.</b> When people were stopped during this task and asked what they were thinking about, slips were more common right after their minds had wandered. Brain scans showed the brain's daydreaming network active before errors. <span>Christoff and colleagues, 2009</span></li>
-      <li><b>Our minds wander a lot.</b> A study that pinged people's phones at random moments found their minds were wandering in about 47% of samples. People were also less happy when their minds wandered. <span>Killingsworth and Gilbert, 2010</span></li>
-      <li><b>Attention fades with time.</b> During World War II, radar operators missed more signals as their watch went on. A clock-watching test built to study this showed accuracy dropping within the first half hour. <span>Mackworth, 1948</span></li>
-      <li><b>A phone buzz costs you, even unchecked.</b> People doing this exact task made more slips after their phone got a notification, even when they didn't look at it. <span>Stothart, Mitchum and Yehnert, 2015</span></li>
-      <li><b>The goldfish claim is a myth.</b> You may have heard that human attention span is now 8 seconds, shorter than a goldfish's. It spread from a 2015 marketing report. When reporters looked for the research behind the number, they couldn't find any.</li>
-    </ul>
-    <p><b>What's still debated.</b> Whether attention spans are actually shrinking is unsettled. Researcher Gloria Mark tracked how long office workers stayed on one screen before switching: about two and a half minutes in 2004, and around 47 seconds in more recent studies. That shows our switching habits have changed. Whether our underlying ability to focus has changed is a separate question, and the evidence there is much weaker.</p>
+    <h3 class="sci-h">What the research says</h3>
+    <p><b>It tracks everyday slips.</b> In the original study, people's errors on this task were linked to their own reports, and those of people who knew them, of everyday attention failures. People's responses also sped up before errors <sup class="c"><a href="#src1">[1]</a></sup>.</p>
+    <p><b>Slips come with a wandering mind.</b> When people were asked about their thoughts during a task like this, mind wandering came with activity in the brain's default network and its executive system. Mind wandering was linked to performance errors, and the effect was strongest when people weren't aware their minds had wandered <sup class="c"><a href="#src2">[2]</a></sup>.</p>
+    <p><b>Minds wander a lot.</b> A study that sampled people's thoughts at random moments during their day found their minds were wandering in 46.9% of samples. People were less happy when their minds were wandering <sup class="c"><a href="#src3">[3]</a></sup>.</p>
+    <p><b>The cost of drifting.</b> A review of mind-wandering research describes how attention shifts away from the main task, leading to failures in performing it <sup class="c"><a href="#src4">[4]</a></sup>.</p>
+    <p><b>A phone buzz costs you, even unchecked.</b> Phone notifications alone disrupted performance on an attention-demanding task, even when people didn't touch their phones <sup class="c"><a href="#src5">[5]</a></sup>.</p>
+
+    <h3 class="sci-h">Adult norms</h3>
+    <p>In one study of university students doing the standard visual version, people tapped on about 40% to 45% of the digits they should have skipped, across different conditions <sup class="c"><a href="#src6">[6]</a></sup>. That means they stopped on roughly 55% to 60%. That range is our summary of that one study, not an official norm. It used a longer test with more targets, so treat the comparison as approximate.</p>
+
+    <h3 class="sci-h">What's still debated</h3>
+    <p><b>Are attention spans shrinking?</b> That's unsettled. You may have heard that people now have an 8-second attention span, shorter than a goldfish's. We found no peer-reviewed study behind that number, so treat it as unsupported. A review of a related popular claim, that students can only focus for 10 to 15 minutes in a lecture, found the commonly cited sources don't support it <sup class="c"><a href="#src7">[7]</a></sup>.</p>
+
+    <h3 class="sci-h">Limits of this game</h3>
+    <p><b>One round is noisy.</b> With only 10 threes, each slip moves the score 10 points. In our simulation of 20,000 rounds, one round landed within about ±30 points of a player's true level 95% of the time. Pooling 10 rounds narrows that to about ±10 points. The scoring showed no lean high or low.</p>
+    <p><b>Phones add noise.</b> Screen refresh and touch timing add a little jitter to tap speeds, which matters most for the speed-before-slips number.</p>
+    <p><b>Careful players can game it.</b> Tapping slowly cuts slips but causes more missed numbers. That's why the game also reports misses.</p>
+    <h3 class="sci-h">Sources</h3>
+    <ol class="ml-src" id="sources"></ol>
   </details>
 
-  <p class="foot">Based on Robertson and colleagues 1997, Christoff and colleagues 2009, and Stothart and colleagues 2015.</p>
+  <p class="foot">Scores are saved on this device only. Nothing is sent anywhere.</p>
 </div>
 
 <script>
+var ML=(function(){
+  function load(k){try{var a=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
+  function get(k){try{var v=localStorage.getItem(k);return v==null?null:JSON.parse(v)}catch(e){return null}}
+  function put(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+  function del(k){try{localStorage.removeItem(k)}catch(e){}}
+  function mean(a){if(!a.length)return null;var s=0;a.forEach(function(x){s+=x});return s/a.length}
+  function sd(a){if(a.length<2)return null;var m=mean(a),s=0;a.forEach(function(x){s+=(x-m)*(x-m)});return Math.sqrt(s/(a.length-1))}
+  /* runs are stored newest first. settle() returns a chronological view of the valid rounds. */
+  function settle(runs,N,val,ok){
+    var v=runs.slice().reverse().filter(function(r){return (!ok||ok(r))&&typeof val(r)==="number"&&isFinite(val(r))}).map(val);
+    var n=v.length,o={n:n,N:N,vals:v,need:Math.max(0,N-n),avg:mean(v),latest:n?v[n-1]:null};
+    if(n>=N){var last=v.slice(-N);o.settled=mean(last);o.spread=sd(last);
+      if(n>=2*N){o.firstN=mean(v.slice(0,N));o.latestN=mean(last)}}
+    return o}
+  function plural(n,w){return n+" "+w+(n===1?"":"s")}
+  /* Hold to quit: about 1 second press with a fill bar. Esc twice on a computer. */
+  function holdToQuit(btn,onQuit){
+    var t=null,fill=btn.querySelector("i"),escAt=0,hint=btn.parentNode.querySelector(".ml-quit-hint");
+    function cancel(){if(t){clearTimeout(t);t=null}btn.classList.remove("holding");if(fill)fill.style.transition="none",fill.style.width="0"}
+    function start(e){e.preventDefault();cancel();btn.classList.add("holding");
+      if(fill){void fill.offsetWidth;fill.style.transition="width 1s linear";fill.style.width="100%"}
+      t=setTimeout(function(){t=null;cancel();onQuit()},1000)}
+    btn.addEventListener("pointerdown",start);
+    ["pointerup","pointerleave","pointercancel"].forEach(function(ev){btn.addEventListener(ev,cancel)});
+    btn.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" ")e.preventDefault()});
+    document.addEventListener("keydown",function(e){
+      if(e.key!=="Escape"||btn.closest("[hidden]")||btn.hidden)return;
+      var now=Date.now();
+      if(now-escAt<1500){escAt=0;if(hint)hint.textContent="";onQuit()}
+      else{escAt=now;if(hint){hint.textContent="Press Esc again to quit";setTimeout(function(){if(Date.now()-escAt>=1400)hint.textContent=""},1500)}}})}
+  /* Reset link with an on-page Cancel / Erase confirmation. Only removes the keys given. */
+  function resetLink(wrap,keys,label,onDone){
+    function idle(){wrap.innerHTML='<button class="ml-link" type="button">'+label+'</button>';
+      wrap.firstChild.addEventListener("click",ask)}
+    function ask(){wrap.innerHTML='<div class="ml-confirm"><span>Erase all saved scores for this game on this device? This can\'t be undone.</span><div class="ml-confirm-row"><button class="ml-btn ghost" type="button">Cancel</button><button class="ml-btn danger" type="button">Erase</button></div></div>';
+      var b=wrap.querySelectorAll("button");b[0].addEventListener("click",idle);
+      b[1].addEventListener("click",function(){keys.forEach(del);idle();if(onDone)onDone()})}
+    idle()}
+  function saveSummary(id,o){o.d=Date.now();put("mindlab.summary."+id,o)}
+  function sources(el,list){el.innerHTML=list.map(function(s,i){
+    return '<li id="src'+(i+1)+'"><span class="n">['+(i+1)+']</span> '+s.c+(s.doi?' <a href="https://doi.org/'+s.doi+'" target="_blank" rel="noopener">https://doi.org/'+s.doi+'</a>':'')+'</li>'}).join("")}
+  /* Small trend chart of round scores with the settled band. */
+  function trend(svg,vals,N,fmt,color){
+    var W=480,H=150,L=44,R=12,T=12,B=26;if(!vals.length){svg.innerHTML="";return}
+    var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals);var pad=(hi-lo)*0.15||Math.abs(hi)*0.1||1;lo-=pad;hi+=pad;
+    function X(i){return vals.length===1?(L+W-R)/2:L+i/(vals.length-1)*(W-L-R)}
+    function Y(v){return T+(hi-v)/(hi-lo)*(H-T-B)}
+    var g="",ticks=[lo,(lo+hi)/2,hi];
+    ticks.forEach(function(v){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+fmt(v)+'</text>'});
+    if(vals.length>=N){var x0=X(vals.length-N),x1=X(vals.length-1);g+='<rect x="'+(x0-6)+'" y="'+T+'" width="'+(x1-x0+12)+'" height="'+(H-T-B)+'" fill="var(--line)" opacity=".45" rx="6"/>';
+      var m=mean(vals.slice(-N));g+='<line x1="'+(x0-6)+'" x2="'+(x1+6)+'" y1="'+Y(m)+'" y2="'+Y(m)+'" stroke="'+color+'" stroke-width="2" stroke-dasharray="5 4"/>'}
+    g+='<polyline points="'+vals.map(function(v,i){return X(i)+","+Y(v)}).join(" ")+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linejoin="round"/>';
+    vals.forEach(function(v,i){g+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3.5" fill="'+color+'"/>'});
+    g+='<text x="'+L+'" y="'+(H-6)+'">first round</text><text x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end">latest</text>';
+    svg.innerHTML=g}
+  return {load:load,get:get,put:put,del:del,mean:mean,sd:sd,settle:settle,plural:plural,holdToQuit:holdToQuit,resetLink:resetLink,saveSummary:saveSummary,sources:sources,trend:trend}
+})();
+
 (function(){
-  var N=90,THREES=10,SOA=1150,SHOW=250,SIZES=[56,72,88,104];
-  var S,raf=null,cd=null;
+  var N0=90,THREES=10,SOA=1150,SHOW=250,SIZES=[56,72,88,104];
+  var KEY="nothree.runs",SUMKEY="mindlab.summary.dt",N=10,LUCK=30,MARGIN=10,ROUND_SD=15,KEEP=200;
+  var SOURCES=[
+    {c:"Robertson, I. H., Manly, T., Andrade, J., Baddeley, B. T., &amp; Yiend, J. (1997). ‘Oops!’: Performance correlates of everyday attentional failures in traumatic brain injured and normal subjects. <i>Neuropsychologia, 35</i>(6), 747&ndash;758.",doi:"10.1016/S0028-3932(97)00015-8"},
+    {c:"Christoff, K., Gordon, A. M., Smallwood, J., Smith, R., &amp; Schooler, J. W. (2009). Experience sampling during fMRI reveals default network and executive system contributions to mind wandering. <i>Proceedings of the National Academy of Sciences, 106</i>(21), 8719&ndash;8724.",doi:"10.1073/pnas.0900234106"},
+    {c:"Killingsworth, M. A., &amp; Gilbert, D. T. (2010). A wandering mind is an unhappy mind. <i>Science, 330</i>(6006), 932.",doi:"10.1126/science.1192439"},
+    {c:"Smallwood, J., &amp; Schooler, J. W. (2006). The restless mind. <i>Psychological Bulletin, 132</i>(6), 946&ndash;958.",doi:"10.1037/0033-2909.132.6.946"},
+    {c:"Stothart, C., Mitchum, A., &amp; Yehnert, C. (2015). The attentional cost of receiving a cell phone notification. <i>Journal of Experimental Psychology: Human Perception and Performance, 41</i>(4), 893&ndash;897.",doi:"10.1037/xhp0000100"},
+    {c:"Seli, P., Jonker, T. R., Cheyne, J. A., &amp; Smilek, D. (2013). Enhancing SART validity by statistically controlling speed-accuracy trade-offs. <i>Frontiers in Psychology, 4</i>, 265.",doi:"10.3389/fpsyg.2013.00265"},
+    {c:"Bradbury, N. A. (2016). Attention span during lectures: 8 seconds, 10 minutes, or more? <i>Advances in Physiology Education, 40</i>(4), 509&ndash;513.",doi:"10.1152/advan.00109.2016"}
+  ];
+  var S=null,raf=null,cd=null;
   function $(id){return document.getElementById(id)}
-  function buildSeq(){
-    var pos=[],seq=[];
-    while(pos.length<THREES){var p=4+Math.floor(Math.random()*(N-4));if(pos.some(function(q){return Math.abs(q-p)<4}))continue;pos.push(p)}
-    for(var i=0;i<N;i++){if(pos.indexOf(i)>=0)seq.push(3);else{var d;do{d=1+Math.floor(Math.random()*9)}while(d===3||(seq.length&&d===seq[seq.length-1]));seq.push(d)}}
+  function val(r){return r.c}
+  function buildSeq(){var pos=[],seq=[];
+    while(pos.length<THREES){var p=4+Math.floor(Math.random()*(N0-4));if(pos.some(function(q){return Math.abs(q-p)<4}))continue;pos.push(p)}
+    for(var i=0;i<N0;i++){if(pos.indexOf(i)>=0)seq.push(3);else{var d;do{d=1+Math.floor(Math.random()*9)}while(d===3||(seq.length&&d===seq[seq.length-1]));seq.push(d)}}
     return seq}
   function fresh(){var seq=buildSeq();return {seq:seq,size:seq.map(function(){return SIZES[Math.floor(Math.random()*SIZES.length)]}),rt:seq.map(function(){return null}),t0:0,i:-1,running:false}}
-
   function setStage(html){$("stage").innerHTML=html}
-  function start(){
-    S=fresh();$("results").hidden=true;$("go").hidden=true;$("bar").style.width="0";
+  function start(){clearInterval(cd);cancelAnimationFrame(raf);S=fresh();$("results").hidden=true;$("go").hidden=true;$("bar").style.width="0";$("quitbar").hidden=false;
     var n=3;setStage('<div class="count">'+n+'</div>');
     cd=setInterval(function(){n--;if(n>0)setStage('<div class="count">'+n+'</div>');else{clearInterval(cd);run()}},800)}
-  function run(){
-    S.running=true;S.t0=performance.now();S.i=-1;$("stage").focus({preventScroll:true});
-    function frame(now){
-      var el=now-S.t0,i=Math.floor(el/SOA);
-      if(i>=N){finish();return}
-      if(i!==S.i){S.i=i;S.onset=S.t0+i*SOA;setStage('<div class="d" style="font-size:'+S.size[i]+'px">'+S.seq[i]+'</div>');S.masked=false;$("bar").style.width=((i+1)/N*100)+"%"}
+  function run(){S.running=true;S.t0=performance.now();S.i=-1;try{$("stage").focus({preventScroll:true})}catch(e){}
+    function frame(now){var el=now-S.t0,i=Math.floor(el/SOA);
+      if(i>=N0){finish();return}
+      if(i!==S.i){S.i=i;S.onset=S.t0+i*SOA;setStage('<div class="d" style="font-size:'+S.size[i]+'px">'+S.seq[i]+'</div>');S.masked=false;$("bar").style.width=((i+1)/N0*100)+"%"}
       if(!S.masked&&el-i*SOA>=SHOW){S.masked=true;setStage('<div class="mask"></div>')}
       raf=requestAnimationFrame(frame)}
     raf=requestAnimationFrame(frame)}
-  function tap(){
-    if(!S||!S.running||S.i<0)return;
-    var i=S.i;if(S.rt[i]!==null)return;
-    S.rt[i]=performance.now()-S.onset;
-    var st=$("stage");st.classList.add("tap");setTimeout(function(){st.classList.remove("tap")},90)}
-  function finish(){S.running=false;cancelAnimationFrame(raf);setStage('<div class="msg">Done. Your results are below.</div>');$("go").hidden=false;$("go").textContent="Play again";results()}
+  function tap(){if(!S||!S.running||S.i<0)return;var i=S.i;if(S.rt[i]!==null)return;
+    S.rt[i]=performance.now()-S.onset;var st=$("stage");st.classList.add("tap");setTimeout(function(){st.classList.remove("tap")},90)}
+  function finish(){S.running=false;cancelAnimationFrame(raf);$("quitbar").hidden=true;setStage('<div class="msg">Done. Your results are below.</div>');$("go").hidden=false;$("go").textContent="Play again";results()}
+  function quit(){clearInterval(cd);cancelAnimationFrame(raf);if(S)S.running=false;$("quitbar").hidden=true;$("go").hidden=false;$("go").textContent="Start";$("bar").style.width="0";setStage('<div class="msg">Stopped. Nothing was saved.</div>')}
+  ML.holdToQuit($("quit"),quit);
 
-  function mean(a){var s=0;a.forEach(function(x){s+=x});return a.length?s/a.length:null}
   function results(){
     var threes=[],goRT=[],omit=0;
     S.seq.forEach(function(d,i){if(d===3)threes.push(i);else if(S.rt[i]===null)omit++;else goRT.push(S.rt[i])});
     var slips=threes.filter(function(i){return S.rt[i]!==null}),held=threes.filter(function(i){return S.rt[i]===null});
     var caught=Math.round(held.length/THREES*100);
-    function pre(i){var a=[];for(var k=i-4;k<i;k++)if(k>=0&&S.seq[k]!==3&&S.rt[k]!==null)a.push(S.rt[k]);return mean(a)}
-    var preSlip=mean(slips.map(pre).filter(function(x){return x!=null})),preHeld=mean(held.map(pre).filter(function(x){return x!=null}));
+    function pre(i){var a=[];for(var k=i-4;k<i;k++)if(k>=0&&S.seq[k]!==3&&S.rt[k]!==null)a.push(S.rt[k]);return ML.mean(a)}
+    var preSlip=ML.mean(slips.map(pre).filter(function(x){return x!=null})),preHeld=ML.mean(held.map(pre).filter(function(x){return x!=null}));
     var diff=(preSlip!=null&&preHeld!=null)?Math.round(preHeld-preSlip):null;
-    var h1=slips.filter(function(i){return i<N/2}).length,h2=slips.length-h1;
+    var h1=slips.filter(function(i){return i<N0/2}).length,h2=slips.length-h1;
+    var runs=ML.load(KEY);runs.unshift({d:Date.now(),v:2,c:caught,e:slips.length,o:omit,f:diff,h1:h1,h2:h2,m:Math.round(ML.mean(goRT)||0)});runs=runs.slice(0,KEEP);ML.put(KEY,runs);
+    var st=ML.settle(runs,N,val);
     $("caught").textContent=held.length+" of "+THREES;$("miss").textContent=String(omit);
     $("before").textContent=diff==null?"--":(diff>=0?diff+" ms faster":(-diff)+" ms slower");
-    $("halves").textContent=h1+" then "+h2;
+    $("sprog").textContent=st.settled!=null?"Settled":Math.min(st.n,N)+" of "+N;
+    $("sprogSub").textContent=st.settled!=null?"Settled: "+Math.round(st.settled)+"% of 3s stopped":ML.plural(st.need,"more round")+" to go";
     $("verdict").textContent=caught>=90?"Locked in. You stopped on "+held.length+" of 10 threes.":(caught>=60?"You stopped on "+held.length+" of 10 threes. Autopilot got you a few times.":"Autopilot took over. You stopped on only "+held.length+" of 10 threes.");
-    chart(threes);
-    $("plain").innerHTML=plain(held.length,slips.length,omit,diff,h1,h2,mean(goRT));
-    $("results").hidden=false;
-    save({d:Date.now(),c:caught,e:slips.length,o:omit});
+    chart(threes);$("plain").innerHTML=plain(held.length,slips.length,omit,diff,h1,h2);
+    $("results").hidden=false;hist(runs);status();
     $("results").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}
 
-  function plain(held,slips,omit,diff,h1,h2,avg){
+  function plain(held,slips,omit,diff,h1,h2){
     var out=[];
-    out.push("<b>The short version.</b> There were 10 threes hidden among 90 numbers. You held back on "+held+" and tapped on "+slips+". "+(slips===0?"Your attention never slipped into autopilot, which is uncommon.":"Each tap on a 3 was a moment when your thumb was running on habit and your attention had drifted."));
+    out.push("<b>The short version.</b> There were 10 threes hidden among 90 numbers. You held back on "+held+" and tapped on "+slips+". "+(slips===0?"Your attention never slipped into autopilot this round.":"Each tap on a 3 was a moment when your thumb was running on habit and your attention had drifted."));
     out.push("<b>Reading the chart.</b> Each gray dot is one tap, placed by how fast you tapped. Higher means slower, lower means faster. Green dots are threes you held back on. Red dots are threes you tapped. Watch for a dip right before a red dot: that's you speeding up just before a slip.");
-    if(diff!=null)out.push("<b>Speed before slips.</b> In the taps just before a slip, you were "+(diff>=0?Math.abs(diff)+" ms faster":Math.abs(diff)+" ms slower")+" than in the taps before a 3 you caught. A ms is a thousandth of a second. "+(diff>20?"That fits the research: speeding up is a sign your thumb has taken over from your attention.":"This run didn't show the usual speed-up, which can happen with only a few slips."));
-    else if(slips===0)out.push("<b>Speed before slips.</b> You had no slips, so there's nothing to compare. Most people slip at least once or twice.");
-    if(slips>0)out.push("<b>First half vs second half.</b> You slipped "+h1+" time"+(h1===1?"":"s")+" in the first half and "+h2+" in the second. "+(h2>h1?"More slips later suggests your focus faded as the game went on, even over two minutes.":(h2<h1?"Fewer slips later means you settled in. Some people warm up before they fade.":"Your slips were spread evenly.")));
-    if(omit>3)out.push("<b>Missed numbers, "+omit+".</b> You also skipped some numbers you should have tapped. Being extra careful can mean fewer slips but more misses. Both count as lapses.");
-    out.push("<b>Why it matters.</b> This is how attention fails in real life. Not with a dramatic blank, but with your hands running on habit while your mind drifts. Typing the wrong word, missing your exit, or a phone buzz pulling you away for a moment. If something needs your full attention, take it in shorter stretches and put the phone face down.");
+    if(diff!=null)out.push("<b>Speed before slips.</b> In the taps just before a slip, you were "+Math.abs(diff)+" ms "+(diff>=0?"faster":"slower")+" than in the taps before a 3 you caught. A ms is a thousandth of a second. "+(diff>20?"That fits the research: speeding up is a sign your thumb has taken over from your attention.":"This round didn't show the usual speed-up, which can happen with only a few slips."));
+    else if(slips===0)out.push("<b>Speed before slips.</b> You had no slips, so there's nothing to compare.");
+    if(slips>0)out.push("<b>First half vs second half.</b> You slipped "+h1+" time"+(h1===1?"":"s")+" in the first half and "+h2+" in the second. "+(h2>h1?"More slips later suggests your focus faded as the round went on.":(h2<h1?"Fewer slips later means you settled in.":"Your slips were spread evenly.")));
+    if(omit>3)out.push("<b>Missed numbers, "+omit+".</b> You also skipped some numbers you should have tapped. Being extra careful can mean fewer slips but more misses.");
+    out.push("<b>How much to trust one round.</b> With only 10 threes, each slip moves your score by 10 points. Luck alone can move one round about "+LUCK+" points up or down. Your settled score pools "+N+" rounds.");
+    out.push("<b>Why it matters.</b> This is how attention often fails in real life. Not with a dramatic blank, but with your hands running on habit while your mind drifts. If something needs your full attention, take it in shorter stretches and put the phone face down.");
     return out.map(function(x){return "<p>"+x+"</p>"}).join("")}
 
   function chart(threes){
-    var W=480,H=200,L=40,R=10,T=14,B=30,ys=S.rt.filter(function(x){return x!=null}),hi=Math.max(700,Math.ceil((Math.max.apply(null,ys.concat([0]))+50)/100)*100),lo=Math.max(0,Math.floor((Math.min.apply(null,ys.concat([hi]))-50)/100)*100);
+    var W=480,H=200,L=58,R=10,T=14,B=30,ys=S.rt.filter(function(x){return x!=null}),hi=Math.max(700,Math.ceil((Math.max.apply(null,ys.concat([0]))+50)/100)*100),lo=Math.max(0,Math.floor((Math.min.apply(null,ys.concat([hi]))-50)/100)*100);
     if(hi-lo<300)lo=Math.max(0,hi-300);
-    function X(i){return L+i/(N-1)*(W-L-R)}
+    function X(i){return L+i/(N0-1)*(W-L-R)}
     function Y(v){return T+(hi-Math.min(hi,Math.max(lo,v)))/(hi-lo)*(H-T-B)}
     var g="";
-    for(var v=lo;v<=hi;v+=(hi-lo>500?200:100)){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v+'</text>'}
-    g+='<text x="'+L+'" y="'+(H-8)+'">start</text><text x="'+(W-R)+'" y="'+(H-8)+'" text-anchor="end">end</text><text x="'+((L+W-R)/2)+'" y="'+(H-8)+'" text-anchor="middle">ms to tap (lower = faster)</text>';
+    for(var v=lo;v<=hi;v+=(hi-lo>500?200:100)){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v+' ms</text>'}
+    g+='<text x="'+L+'" y="'+(H-8)+'">start</text><text x="'+(W-R)+'" y="'+(H-8)+'" text-anchor="end">end</text><text x="'+((L+W-R)/2)+'" y="'+(H-8)+'" text-anchor="middle">time to tap (higher = slower)</text>';
     S.seq.forEach(function(d,i){if(d!==3&&S.rt[i]!=null)g+='<circle cx="'+X(i)+'" cy="'+Y(S.rt[i])+'" r="2.5" fill="var(--dot)" fill-opacity=".7"/>'});
     threes.forEach(function(i){var slip=S.rt[i]!=null,y=slip?Y(S.rt[i]):H-B-4;
       g+='<line x1="'+X(i)+'" x2="'+X(i)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--'+(slip?"bad":"ok")+')" stroke-opacity=".25"/>';
       g+='<circle cx="'+X(i)+'" cy="'+y+'" r="6" fill="var(--'+(slip?"bad":"ok")+')"/>'});
     $("chart").innerHTML=g}
 
-  function load(){try{return JSON.parse(localStorage.getItem("nothree.runs")||"[]")}catch(e){return []}}
-  function save(r){var a=load();a.unshift(r);a=a.slice(0,20);try{localStorage.setItem("nothree.runs",JSON.stringify(a))}catch(e){}hist(a)}
+  function summaryText(st){
+    if(st.settled!=null)return "You hold back on about "+Math.round(st.settled)+"% of the 3s, so autopilot catches you on about "+Math.round(100-st.settled)+"% (settled over your last "+N+" rounds).";
+    if(st.n)return "You've held back on about "+Math.round(st.avg)+"% of the 3s so far. "+ML.plural(st.need,"more round")+" before this score is reliable.";
+    return "Not played yet."}
+  var NORM_LO=55,NORM_HI=60;
+  function normWord(s){return s>NORM_HI?"better":(s>=NORM_LO?"typical":"worse")}
+  function normText(s){var w=normWord(s);return "In one study of university students, people stopped on roughly "+NORM_LO+"% to "+NORM_HI+"% of the digits they should skip. That range is our summary of that study, which used a longer test. "+(w==="better"?"You stop on more than that, so your attention holds up better than typical.":(w==="typical"?"You're in that typical range.":"You stop on fewer than that, so autopilot catches you more than typical."))}
+  function normObj(s){var o={label:"Typical in one study: stopped on about "+NORM_LO+"\u2013"+NORM_HI+"% of no-go digits"};if(s!=null){o.metric="share of 3s stopped";o.value=Math.round(s);o.lo=NORM_LO;o.hi=NORM_HI;o.verdict=normWord(s)}return o}
+  function status(){
+    var runs=ML.load(KEY),st=ML.settle(runs,N,val),h="";
+    if(st.settled==null){
+      h+='<h2>Still settling: '+ML.plural(st.need,"more round")+' before your score is reliable</h2>';
+      h+='<div class="ml-meter"><i style="width:'+(st.n/N*100)+'%"></i></div>';
+      h+='<p>One round can swing about '+LUCK+' points either way from luck alone, because each round has only 10 threes. Pooling '+N+' rounds narrows that to about ±'+MARGIN+' points.</p>';
+      if(st.n)h+='<p><b>Average so far:</b> you held back on about '+Math.round(st.avg)+'% of the 3s, over '+ML.plural(st.n,"round")+'. This is an early read.</p>';
+    }else{
+      var s=Math.round(st.settled),rec=runs.filter(function(r){return typeof r.c==="number"}).slice(0,N);
+      var fs=rec.map(function(r){return r.f}).filter(function(x){return typeof x==="number"}),fd=ML.mean(fs);
+      var H1=0,H2=0;rec.forEach(function(r){if(typeof r.h1==="number"){H1+=r.h1;H2+=r.h2}});
+      h+='<h2>What your scores mean so far</h2><p><span class="ml-pill ok">Settled</span> <span class="ml-pill">'+ML.plural(st.n,"round")+' played</span></p>';
+      h+='<p><b>Your settled score: '+s+'% of 3s stopped.</b> Out of every 10 times you need to stop a habit at a moment\'s notice, you catch about '+Math.round(s/10)+'. The other '+(10-Math.round(s/10))+' times, your thumb runs on autopilot. This pools your last '+N+' rounds, so it should be within about ±'+MARGIN+' points of your true level.</p>';
+      h+='<p><b>Compared with adults.</b> '+normText(s)+'</p>';
+      h+='<p><b>Consistency.</b> Your last '+N+' rounds varied by about ±'+ML.plural(Math.round(st.spread),"point")+'. '+(st.spread<ROUND_SD*0.75?'That\'s steadier than luck alone usually allows.':(st.spread<=ROUND_SD*1.25?'That\'s about what luck alone produces.':'That\'s more than luck alone explains, so your focus changes from round to round.'))+'</p>';
+      if(st.firstN!=null){var ch=st.latestN-st.firstN;h+='<p><b>Change over time.</b> Your first '+N+' rounds averaged '+Math.round(st.firstN)+'%. Your latest '+N+' average '+Math.round(st.latestN)+'%. '+(Math.abs(ch)<MARGIN?'That\'s within the margin of luck, so no clear change.':(ch>0?'You\'re catching more 3s than you used to.':'You\'re catching fewer 3s than you used to.'))+'</p>'}
+      else h+='<p><b>Change over time.</b> After '+(2*N)+' rounds, this will compare your first '+N+' with your latest '+N+'. '+ML.plural(2*N-st.n,"more round")+' to go.</p>';
+      var ins=[];if(fd!=null)ins.push(fd>15?'Before a slip you tap about '+Math.round(fd)+' ms faster than usual. That speed-up is your warning sign of autopilot.':'Your speed before slips doesn\'t change much, so autopilot gives little warning for you.');
+      if(H1+H2>0)ins.push(H2>H1?'You slip more in the second half of rounds ('+H2+' vs '+H1+'), so your focus fades even over two minutes.':(H2<H1?'You slip more in the first half ('+H1+' vs '+H2+'), so you warm up as you go.':'Your slips are spread evenly across rounds.'));
+      if(ins.length)h+='<p><b>Your pattern.</b> '+ins.join(' ')+'</p>'}
+    h+='<svg class="ml-trend" id="trend" viewBox="0 0 480 150" role="img" aria-label="Share of 3s you stopped on each round"></svg><div id="resetWrap"></div>';
+    $("mlstatus").innerHTML=h;
+    ML.trend($("trend"),st.vals,N,function(v){return Math.round(v)+"%"},"var(--acc)");
+    ML.resetLink($("resetWrap"),[KEY,SUMKEY],"Reset my scores",function(){status();hist([]);$("results").hidden=true});
+    ML.saveSummary("dt",{settled:st.settled!=null,n:st.n,need:st.need,N:N,score:st.settled!=null?st.settled:st.avg,norm:normObj(st.settled),t:summaryText(st)})}
+
   function hist(a){if(!a.length){$("histWrap").hidden=true;return}$("histWrap").hidden=false;
     $("hist").innerHTML=a.slice(0,8).map(function(r){var d=new Date(r.d);
-      return "<tr><td>"+(d.getMonth()+1)+"/"+d.getDate()+" "+d.toTimeString().slice(0,5)+"</td><td>"+(r.c/10)+"/10</td><td>"+r.e+"</td><td>"+r.o+"</td></tr>"}).join("");
-    var s=0;a.forEach(function(r){s+=r.c});
-    $("histAvg").textContent=a.length>1?("Across "+a.length+" runs you stopped on "+Math.round(s/a.length)+"% of threes on average."):"Play a few more runs to see your average."}
+      return "<tr><td>"+(d.getMonth()+1)+"/"+d.getDate()+" "+d.toTimeString().slice(0,5)+"</td><td>"+(r.c/10)+"/10</td><td>"+r.e+"</td><td>"+r.o+"</td></tr>"}).join("")}
 
   $("go").addEventListener("click",start);
   $("stage").addEventListener("pointerdown",function(e){e.preventDefault();tap()});
   document.addEventListener("keydown",function(e){if((e.key===" "||e.key==="Enter")&&S&&S.running){e.preventDefault();if(!e.repeat)tap()}});
   $("again").addEventListener("click",function(){window.scrollTo({top:0});start()});
-  hist(load());
+  ML.sources($("sources"),SOURCES);
+  hist(ML.load(KEY));status();
 })();
 </script>
 
